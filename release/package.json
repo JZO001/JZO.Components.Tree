@@ -1,0 +1,63 @@
+{
+  "name": "jzo-components-tree",
+  "version": "1.0.0",
+  "description": "JZO's customizable tree component",
+  "author": "Zoltan Juhasz",
+  "license": "MIT",
+  "types": "./build/index.d.ts",
+  "main": "./build/bundle.js",
+  "keywords": [
+    "jzo",
+    "react",
+    "tree"
+  ],
+  "peerDependencies": {
+    "react": "^16.0.0 || ^17.0.2",
+    "jzo-library": "^1.0.1"
+  },
+  "dependencies": {
+    "jzo-library": "1.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JZO001/JZO.Components.Tree"
+  },
+  "scripts": {
+    "build": "rimraf ./build && webpack --config webpack.config.js",
+    "debug": "rimraf ./build && webpack --config webpack.dev-config.js",
+    "lint": "eslint ./src/"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.14.5",
+    "@babel/core": "^7.14.6",
+    "@babel/node": "^7.14.7",
+    "@babel/preset-env": "7.14.5",
+    "@babel/preset-react": "7.14.5",
+    "@babel/preset-typescript": "^7.14.5",
+    "@types/react": "17.0.11",
+    "@types/react-dom": "17.0.8",
+    "@types/node": "^12.20.15",
+    "babel-loader": "^8.2.2",
+    "rimraf": "^3.0.2",
+    "terser-webpack-plugin": "^5.1.4",
+    "ts-loader": "^9.2.3",
+    "typescript": "^4.3.4",
+    "webpack": "^5.41.0",
+    "webpack-cli": "^4.7.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "last 2 versions"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

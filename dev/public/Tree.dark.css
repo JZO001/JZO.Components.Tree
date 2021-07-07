@@ -1,0 +1,33 @@
+.jzo-tree {
+    background-color: black;
+    color: white;
+}
+
+.jzo-tree-borders {
+    border: 1px solid #4d4d4d;
+}
+
+.jzo-tree-right-border {
+    border-right: 1px solid #4d4d4d;
+}
+
+.jzo-tree-bottom-border {
+    border-bottom: 1px solid #4d4d4d;
+}
+
+div.jzo-tree-node-row-hover:hover {
+    background-color: gray;
+}
+
+.jzo-tree-focused-row {
+    background-color: darkgray;
+}
+
+.jzo-tree-error {
+    color: red;
+    font-weight: normal;
+}
+
+.jzo-tree-disabled-cover {
+    background-color: rgba(255, 255, 255, 0.5);
+}

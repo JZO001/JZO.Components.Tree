@@ -1,0 +1,27 @@
+.basic-grid-layout {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(4, 350px);
+}
+
+.header-content-layout {
+    display: grid;
+    grid-template-rows: 78px auto;
+    grid-template-columns: 350px;
+}
+
+.controlled-grid-layout {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(3, 350px);
+}
+
+.others-grid-layout {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(3, 350px);
+}
+
+.margin12 {
+    margin: 0 12px 0 12px;
+}

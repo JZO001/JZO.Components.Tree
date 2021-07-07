@@ -1,0 +1,133 @@
+.im {
+    font-size: 0.875rem !important;
+}
+
+.jzo-tree {
+    margin: 0;
+    padding: 0;
+    font-size: 0.875rem;
+    position: relative;
+}
+
+.jzo-tree-overflow-x-auto {
+    overflow-x: auto;
+}
+
+.jzo-tree-overflow-x-hidden {
+    overflow-x: hidden;
+}
+
+.jzo-tree-no-overflow {
+    overflow: hidden;
+}
+
+.jzo-tree-disabled {
+    pointer-events: none;
+}
+
+.jzo-tree-disabled-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.jzo-tree-flexDirCol {
+    display: flex;
+    flex-direction: column !important;
+}
+
+.jzo-tree-header-layout {
+    display: grid;
+    grid-template-rows: 26px;
+    grid-template-columns: 26px auto;
+}
+
+.jzo-tree-header-checkbox {
+    margin: 0;
+    padding: 0;
+}
+
+.jzo-tree-header-title {}
+
+.jzo-tree-error-layout {
+    display: grid;
+    grid-template-rows: minmax(26px, auto);
+    grid-template-columns: auto;
+}
+
+.jzo-tree-error-text {
+    margin: 0 4px 0 4px;
+}
+
+.jzo-tree-rows-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+}
+
+.jzo-tree-retraction-cell {
+    margin: 0;
+    padding: 0;
+}
+
+.jzo-tree-toggle-cell {
+    margin: 0;
+    padding: 0;
+    width: 26px;
+}
+
+.jzo-tree-checkbox-cell {
+    margin: 0;
+    padding: 0;
+}
+
+.jzo-tree-title-cell {
+    margin: 0;
+    padding: 0;
+}
+
+.jzo-tree-node-row {
+    min-width: 100%;
+    border-spacing: 0;
+}
+
+.jzo-tree-box-sizing {
+    box-sizing: border-box;
+}
+
+.jzo-disable-selection {
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -o-user-select: none;
+    -moz-user-select: none;
+}
+
+.jzo-tree-noWrapText {
+    white-space: nowrap;
+}
+
+.jzo-tree-noWrapText-ellipsis {
+    text-overflow: ellipsis !important;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.jzo-tree-centered-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.jzo-tree-left-centered-content {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.jzo-tree-hand-pointer {
+    cursor: pointer;
+}

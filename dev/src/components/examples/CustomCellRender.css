@@ -1,0 +1,31 @@
+.custom-cell-render-cell-layout {
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: auto 26px;
+    padding: 0;
+    margin: 0;
+}
+
+.cct-circle-size1 {
+    height: 0.9rem;
+    width: 0.6rem;
+    background-color: darkkhaki;
+}
+
+.cct-circle-size2 {
+    height: 0.85rem;
+    width: 0.5rem;
+    background-color: mediumpurple;
+}
+
+.cct-circle-size3 {
+    height: 0.8rem;
+    width: 0.4rem;
+    background-color: darksalmon;
+}
+
+.cct-circle-size4 {
+    height: 0.75rem;
+    width: 0.3rem;
+    background-color: deepskyblue;
+}
