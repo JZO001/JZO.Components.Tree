@@ -5,23 +5,18 @@ const TerserPlugin = require("terser-webpack-plugin");
 if (!fs.existsSync(path.join(process.cwd(), "./build"))) {
   fs.mkdirSync(path.join(process.cwd(), "./build"));
 }
-// if (!fs.existsSync(path.join(process.cwd(), "./build/d.ts"))) {
-//   fs.mkdirSync(path.join(process.cwd(), "./build/d.ts"));
-// }
-// fs.readdirSync("./src/d.ts").forEach(file => {
-//   fs.copyFileSync(path.join(process.cwd(), "./src/d.ts/", file), path.join(process.cwd(), "./build/d.ts/", file));
-// });
+
+if (!fs.existsSync(path.join(process.cwd(), "./Tree.common.css"))) {
+  fs.copyFileSync(path.join(process.cwd(), "./src/Tree.common.css"), path.join(process.cwd(), "./build/Tree.common.css"));
+}
+if (!fs.existsSync(path.join(process.cwd(), "./Tree.dark.css"))) {
+  fs.copyFileSync(path.join(process.cwd(), "./src/Tree.dark.css"), path.join(process.cwd(), "./build/Tree.dark.css"));
+}
+if (!fs.existsSync(path.join(process.cwd(), "./Tree.light.css"))) {
+  fs.copyFileSync(path.join(process.cwd(), "./src/Tree.light.css"), path.join(process.cwd(), "./build/Tree.light.css"));
+}
 
 const entries = { bundle: './src/index.ts' };
-// const entries = {};
-// fs.readdirSync("./src").forEach(file => {
-//   if (file.endsWith('.ts') && file !== 'd.ts') {
-//     const entryName = file.substring(0, file.length - 3);
-//     entries[entryName] = "./src/" + file;
-//   }
-// });
-
-console.log(entries);
 
 module.exports = {
   mode: 'development',
