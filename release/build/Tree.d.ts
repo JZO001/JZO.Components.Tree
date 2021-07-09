@@ -111,6 +111,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private _repaintTimeoutId;
     private _isVerticalScrollBarVisible;
     private _tableRefs;
+    private _needReset;
     state: {
         hasError: boolean;
         errorText: string;
@@ -118,6 +119,20 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     constructor(props: TreeProps);
     static IsUndefinedOrNullOrEmpty: (obj: any) => boolean;
     resetError: () => void;
+    getCheckedState: (nodeId: NumberOrString) => CheckedStateEnum | undefined;
+    getHasChildrenState: (nodeId: NumberOrString) => boolean | undefined;
+    isKnownNodeById: (nodeId: NumberOrString) => boolean;
+    isNodeExpanded: (nodeId: NumberOrString) => boolean | undefined;
+    isNodeFocused: (nodeId: NumberOrString) => boolean | undefined;
+    isNodeDisabled: (nodeId: NumberOrString) => boolean | undefined;
+    isNodeCheckboxVisible: (nodeId: NumberOrString) => boolean | undefined;
+    getNodeLevel: (nodeId: NumberOrString) => number | undefined;
+    isNodeChildrenLoaded: (nodeId: NumberOrString) => boolean | undefined;
+    getNodeParentId: (nodeId: NumberOrString) => NumberOrString | undefined;
+    getNodeValueById: (nodeId: NumberOrString) => any | undefined;
+    reset: () => void;
+    private createRootNodeData;
+    private loadChildNodes;
     private acquireRootNodeId;
     private acquireDataFromFunction;
     private acquireDataFromObject;

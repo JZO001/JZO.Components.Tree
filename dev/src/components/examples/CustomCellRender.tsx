@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Tree, { LoadItemEventArgs, RenderCellItemEventArgs, ToggleMode } from "../Tree";
+import Tree, { LoadItemEventArgs, RenderCellItemEventArgs, ToggleModeEnum } from "../Tree";
 import { BasicItem } from "./types";
 
 import "./CustomCellRender.css";
@@ -50,7 +50,7 @@ export default class CustomCellRender extends React.Component<BasicProps> {
                         allowCheckboxes={true}
                         allowCheckAll={true}
                         allowHorizontalScroll={true}
-                        nodeDescendantToggleMode={ToggleMode.Select}
+                        nodeDescendantToggleMode={ToggleModeEnum.Deselect}
                         nodeIdExpr="id"
                         nodeParentIdExpr="parentId"
                         nodeRootIdExpr="0"

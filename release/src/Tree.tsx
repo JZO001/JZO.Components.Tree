@@ -152,8 +152,8 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         allowFocusing: false,
         allowHovering: true,
         allowHorizontalScroll: false,
-        checkedRowKeys: null,
-        expandedRowKeys: null,
+        checkedRowKeys: [],
+        expandedRowKeys: [],
         focusedRowKey: null,
         headerTitle: "Check all",
         nodeDescendantToggleMode: ToggleModeEnum.Deselect,
@@ -185,6 +185,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private _repaintTimeoutId: number = -1;
     private _isVerticalScrollBarVisible: boolean = false;
     private _tableRefs: Array<HTMLTableElement> = [];
+    private _needReset: boolean = false;
 
     state = {
         hasError: false,
@@ -196,6 +197,119 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
 
         if (!props.onLoadItems || props.onLoadItems === null) throw new ArgumentNullException("onLoadItems not defined.");
         this._rootNodeId = this.acquireRootNodeId(props).value as NumberOrString;
+        this.createRootNodeData(props);
+    }
+
+    static IsUndefinedOrNullOrEmpty = (obj: any): boolean => obj === undefined || obj === null || obj === "";
+
+    public resetError = () => {
+        this.setState({ errorText: null, hasError: false });
+    }
+
+    public getCheckedState = (nodeId: NumberOrString): CheckedStateEnum | undefined => {
+        let result = undefined;
+        if (this.props.allowCheckboxes && this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.isChecked;
+        }
+        return result;
+    }
+
+    public getHasChildrenState = (nodeId: NumberOrString): boolean | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.hasChildren;
+        }
+        return result;
+    }
+
+    public isKnownNodeById = (nodeId: NumberOrString): boolean => {
+        return this._itemDict.containsKey(nodeId);
+    }
+
+    public isNodeExpanded = (nodeId: NumberOrString): boolean | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.isExpanded;
+        }
+        return result;
+    }
+
+    public isNodeFocused = (nodeId: NumberOrString): boolean | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.isFocused;
+        }
+        return result;
+    }
+
+    public isNodeDisabled = (nodeId: NumberOrString): boolean | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.isDisabled;
+        }
+        return result;
+    }
+
+    public isNodeCheckboxVisible = (nodeId: NumberOrString): boolean | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.hasCheckbox;
+        }
+        return result;
+    }
+
+    public getNodeLevel = (nodeId: NumberOrString): number | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.level;
+        }
+        return result;
+    }
+
+    public isNodeChildrenLoaded = (nodeId: NumberOrString): boolean | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.isChildrenLoaded;
+        }
+        return result;
+    }
+
+    public getNodeParentId = (nodeId: NumberOrString): NumberOrString | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.parentId;
+        }
+        return result;
+    }
+
+    public getNodeValueById = (nodeId: NumberOrString): any | undefined => {
+        let result = undefined;
+        if (this._itemDict.containsKey(nodeId)) {
+            let nodeData = this._itemDict.get(nodeId);
+            result = nodeData.node;
+        }
+        return result;
+    }
+
+    public reset = (): void => {
+        this._needReset = true;
+        this._currentlyFocusedNode = null;
+        this._isVerticalScrollBarVisible = false;
+        this._tableRefs = [];
+        this._itemDict.clear();
+        this.createRootNodeData(this.props);
+    }
+
+    private createRootNodeData = (props: TreeProps): void => {
         this._itemDict.add(this._rootNodeId, {
             id: this._rootNodeId,
             hasCheckbox: props.allowCheckboxes,
@@ -214,10 +328,65 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         });
     }
 
-    static IsUndefinedOrNullOrEmpty = (obj: any): boolean => obj === undefined || obj === null || obj === "";
+    private loadChildNodes = (nodeData: NodeData): Promise<void> => {
+        return new Promise<void>((resolve, reject) => {
+            this.props.onLoadItems({ component: this, nodeParentId: nodeData.id, nodeParentLevel: nodeData.level })
+                .then((nodes: Array<any>) => {
+                    nodeData.isChildrenLoaded = true;
+                    const nodesToLoadChildren: Array<NodeData> = [];
+                    if (nodes.length > 0) {
+                        try {
+                            const createdNodes: Array<NodeData> = [];
+                            nodes.forEach((node: any, index: number) => {
+                                const createdNodeData: NodeData = this.acquireDataForDataNode(this.props, node);
+                                createdNodes.push(createdNodeData);
 
-    public resetError = () => {
-        this.setState({ errorText: null, hasError: false });
+                                if (!Tree.IsUndefinedOrNullOrEmpty(this.props.expandedRowKeys) &&
+                                    this.props.expandedRowKeys.indexOf(createdNodeData.id) !== -1 &&
+                                    createdNodeData.hasChildren &&
+                                    !createdNodeData.isChildrenLoaded) {
+                                    nodesToLoadChildren.push(createdNodeData);
+                                }
+                            });
+                            if (!Tree.IsUndefinedOrNullOrEmpty(this.props.onCheckedRowKeysChanged)) {
+                                createdNodes.forEach((createdNode: NodeData) => {
+                                    if (createdNode.isChecked === CheckedStateEnum.Checked) this.props.checkedRowKeys.push(createdNode.id);
+                                });
+                            }
+                            this._tableRefs.splice(0);
+                        } catch (error) {
+                            this.displayError(error);
+                            //console.log(error);
+                        }
+                    }
+
+                    if (nodesToLoadChildren.length > 0) {
+                        const fn = () => {
+                            const nextNodeDataWithoutChildren: NodeData = nodesToLoadChildren[0];
+                            nodesToLoadChildren.splice(0, 1);
+                            this.loadChildNodes(nextNodeDataWithoutChildren)
+                                .then(() => {
+                                    if (nodesToLoadChildren.length === 0) {
+                                        resolve();
+                                    } else {
+                                        fn();
+                                    }
+                                })
+                                .catch((error) => {
+                                    reject(error);
+                                });
+                        }
+                        fn();
+                    } else {
+                        resolve();
+                    }
+                })
+                .catch((error) => {
+                    this.displayError(error);
+                    //console.log(error);
+                    resolve();
+                });
+        });
     }
 
     private acquireRootNodeId(props: TreeProps): ReturnValue {
@@ -241,7 +410,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private acquireDataFromFunction(functionField: any, data: any): ReturnValue {
         const ret: ReturnValue = { success: false };
         if (typeof functionField === "function") {
-            ret.value = (functionField as Function).call(data, null) as NumberOrString;
+            ret.value = (functionField as Function).call(data, { component: this, nodeItem: data } as TreeNodeEventArgs) as NumberOrString;
             ret.success = true;
         }
         return ret;
@@ -284,17 +453,17 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         const nodeData: NodeData = {
             id: id,
             parentId: parentId,
-            hasChildren: props.nodeHasChildrenExpr ? this.acquireDataFromNode("nodeHasChildrenExpr", props.nodeHasChildrenExpr, node).value as boolean : false,
+            hasChildren: this.props.nodeHasChildrenExpr ? this.acquireDataFromNode("nodeHasChildrenExpr", this.props.nodeHasChildrenExpr, node).value as boolean : false,
             hasExpandableNodesInChildren: false,
             isChildrenLoaded: false,
-            hasCheckbox: (props.allowCheckboxes && props.nodeIsCheckboxVisibleExpr) ? this.acquireDataFromNode("nodeIsCheckboxVisibleExpr", props.nodeIsCheckboxVisibleExpr, node).value as boolean : props.allowCheckboxes,
-            isDisabled: props.nodeIsDisabledExpr ? this.acquireDataFromNode("nodeIsDisabledExpr", props.nodeIsDisabledExpr, node).value as boolean : false,
+            hasCheckbox: (this.props.allowCheckboxes && this.props.nodeIsCheckboxVisibleExpr) ? this.acquireDataFromNode("nodeIsCheckboxVisibleExpr", this.props.nodeIsCheckboxVisibleExpr, node).value as boolean : this.props.allowCheckboxes,
+            isDisabled: this.props.nodeIsDisabledExpr ? this.acquireDataFromNode("nodeIsDisabledExpr", this.props.nodeIsDisabledExpr, node).value as boolean : false,
             level: level,
             node: node,
             parent: parent,
             isExpanded: props.expandedRowKeys !== null && props.expandedRowKeys.indexOf(id) !== -1,
             isFocused: props.allowFocusing && props.focusedRowKey === id,
-            isChecked: parent.isChecked === CheckedStateEnum.Checked ? CheckedStateEnum.Checked : CheckedStateEnum.Unchecked,
+            isChecked: parent.isChecked === CheckedStateEnum.Checked || (!Tree.IsUndefinedOrNullOrEmpty(this.props.checkedRowKeys) && this.props.checkedRowKeys.indexOf(id) !== -1) ? CheckedStateEnum.Checked : CheckedStateEnum.Unchecked,
             children: []
         };
         if (nodeData.hasChildren) parent.hasExpandableNodesInChildren = nodeData.hasChildren;
@@ -315,29 +484,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         if (nodeData.isChildrenLoaded || nodeData.isExpanded) {
             this.toggleNode(nodeData);
         } else {
-            this.props.onLoadItems({ component: this, nodeParentId: nodeData.id, nodeParentLevel: nodeData.level })
-                .then((nodes: Array<any>) => {
-                    if (nodes.length > 0) {
-                        try {
-                            const createdNodes: Array<NodeData> = [];
-                            nodes.forEach((node: any, index: number) => createdNodes.push(this.acquireDataForDataNode(this.props, node)));
-                            if (!Tree.IsUndefinedOrNullOrEmpty(this.props.onCheckedRowKeysChanged)) {
-                                createdNodes.forEach((createdNode: NodeData) => {
-                                    if (createdNode.isChecked === CheckedStateEnum.Checked) this.props.checkedRowKeys.push(createdNode.id);
-                                });
-                            }
-                            this._tableRefs.splice(0);
-                            this.toggleNode(nodeData);
-                        } catch (error) {
-                            this.displayError(error);
-                            //console.log(error);
-                        }
-                    }
-                })
-                .catch((error) => {
-                    this.displayError(error);
-                    //console.log(error);
-                });
+            this.loadChildNodes(nodeData).then(() => this.toggleNode(nodeData));
         }
     }
 
@@ -379,7 +526,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     }
 
     private onClickCellFocusing = (nodeData: NodeData) => {
-        if (this.props.disabled) return;
+        if (this.props.disabled || nodeData.isDisabled) return;
         if (this.props.allowFocusing) {
             if (Tree.IsUndefinedOrNullOrEmpty(this.props.onFocusedRowKeyChanged)) {
                 // uncontrolled
@@ -403,7 +550,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     }
 
     private onCheckboxCheckedChanged = (nodeData: NodeData) => {
-        if (this.props.disabled) return;
+        if (this.props.disabled || nodeData.isDisabled) return;
         let e: CheckedRowKeysChangedEventArgs = null;
 
         if (!Tree.IsUndefinedOrNullOrEmpty(this.props.onCheckedRowKeysChanged)) {
@@ -490,7 +637,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             nodeData.isChecked = CheckedStateEnum.Unchecked;
         } else {
             // controlled
-            e.uncheckedRowKeys.push(nodeData.id);
+            if (nodeData.isChecked !== CheckedStateEnum.Undetermined) e.uncheckedRowKeys.push(nodeData.id);
         }
         this.changeChildrenCheckedStateToUnchecked(nodeData, e);
         if (nodeData.id !== this._rootNodeId) this.recursiveCheckParents(nodeData.parent, e, false);
@@ -556,7 +703,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                     childNodeData.isChecked = CheckedStateEnum.Unchecked;
                 } else {
                     // controlled
-                    e.uncheckedRowKeys.push(childNodeData.id);
+                    if (childNodeData.isChecked !== CheckedStateEnum.Undetermined) e.uncheckedRowKeys.push(childNodeData.id);
                 }
                 this.changeChildrenCheckedStateToUnchecked(childNodeData, e);
             }
@@ -642,10 +789,11 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                         eventArgs.hasCheckbox ?
                             <input
                                 type="checkbox"
+                                className="jzo-tree-checkbox jzo-tree-checkbox-node"
                                 checked={eventArgs.isChecked === CheckedStateEnum.Checked}
                                 ref={inpRef => inpRef && (inpRef.indeterminate = eventArgs.isChecked === CheckedStateEnum.Undetermined)}
                                 onChange={() => eventArgs.onCheckboxCheckedChangedFunction.call(this)}
-                                disabled={this.props.disabled}
+                                disabled={this.props.disabled || eventArgs.isDisabled}
                             />
                             :
                             null
@@ -683,6 +831,10 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             else if (this._currentlyFocusedNode !== null && this._currentlyFocusedNode.id === nodeData.id)
                 this._currentlyFocusedNode = null;
         }
+
+        nodeData.hasChildren = this.props.nodeHasChildrenExpr ? this.acquireDataFromNode("nodeHasChildrenExpr", this.props.nodeHasChildrenExpr, nodeData).value as boolean : false;
+        nodeData.isDisabled = this.props.nodeIsDisabledExpr ? this.acquireDataFromNode("nodeIsDisabledExpr", this.props.nodeIsDisabledExpr, nodeData).value as boolean : false;
+        nodeData.hasCheckbox = (this.props.allowCheckboxes && this.props.nodeIsCheckboxVisibleExpr) ? this.acquireDataFromNode("nodeIsCheckboxVisibleExpr", this.props.nodeIsCheckboxVisibleExpr, nodeData).value as boolean : this.props.allowCheckboxes;
 
         const e: RenderRowItemEventArgs = {
             allowFocusing: this.props.allowFocusing ? this.props.allowFocusing : false,
@@ -728,9 +880,11 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                 }
             }}
         >
-            <tr style={styleTableRow}>
-                {this.props.onRenderRowItem ? this.props.onRenderRowItem(e) : this.defaultRowRenderer(e)}
-            </tr>
+            <tbody className="jzo-tree-row-tbody">
+                <tr style={styleTableRow}>
+                    {this.props.onRenderRowItem ? this.props.onRenderRowItem(e) : this.defaultRowRenderer(e)}
+                </tr>
+            </tbody>
         </table>
 
         rows.push(row);
@@ -775,14 +929,16 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             if (this.props.showRowLines) classNames += " jzo-tree-bottom-border";
 
             const nodeData: NodeData = this._itemDict.get(this._rootNodeId);
+            nodeData.isDisabled = this.props.nodeIsDisabledExpr ? this.acquireDataFromNode("nodeIsDisabledExpr", this.props.nodeIsDisabledExpr, nodeData).value as boolean : false;
 
             content = <div className={classNames}>
                 <div className="jzo-tree-centered-content jzo-tree-header-checkbox">
                     <input type="checkbox"
+                        className="jzo-tree-checkbox jzo-tree-checkbox-all"
                         checked={nodeData.isChecked === CheckedStateEnum.Checked}
                         onChange={() => this.onCheckboxCheckedChanged(nodeData)}
                         ref={inpRef => inpRef && (inpRef.indeterminate = nodeData.isChecked === CheckedStateEnum.Undetermined)}
-                        disabled={this.props.disabled}
+                        disabled={this.props.disabled || nodeData.isDisabled}
                     />
                 </div>
                 <div className="jzo-tree-noWrapText-ellipsis jzo-tree-left-centered-content jzo-tree-header-title">
@@ -818,23 +974,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     }
 
     componentDidMount() {
-        this.props.onLoadItems({ component: this, nodeParentId: this._rootNodeId, nodeParentLevel: 0 })
-            .then((nodes: Array<any>) => {
-                if (nodes.length > 0) {
-                    try {
-                        nodes.forEach((node: any, index: number) => this.acquireDataForDataNode(this.props, node));
-                        this._tableRefs.splice(0);
-                        this.forceUpdate();
-                    } catch (error) {
-                        this.displayError(error);
-                        //console.log(error);
-                    }
-                }
-            })
-            .catch((error) => {
-                this.displayError(error);
-                //console.log(error);
-            });
+        this.loadChildNodes(this._itemDict.get(this._rootNodeId)).then(() => this.forceUpdate());
     }
 
     componentWillUnmount() {
@@ -887,6 +1027,15 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                     this._repaintTimeoutId = -1;
                 }, 1) as any as number;
             }
+        }
+
+        if (this._needReset) {
+            this._needReset = false;
+            this.loadChildNodes(this._itemDict.get(this._rootNodeId))
+                .then(() => {
+                    if (this.state.hasError) this.setState({ hasError: false, errorText: null });
+                    this.forceUpdate();
+                });
         }
 
         return (

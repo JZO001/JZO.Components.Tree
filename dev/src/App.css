@@ -13,7 +13,7 @@
 .controlled-grid-layout {
     display: grid;
     grid-template-rows: auto;
-    grid-template-columns: repeat(3, 350px);
+    grid-template-columns: repeat(4, 350px);
 }
 
 .others-grid-layout {

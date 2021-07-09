@@ -9,6 +9,7 @@ import Basic4 from "./components/examples/Basic4";
 import ExpandControlled from "./components/examples/ExpandControlled";
 import FocusingControlled from "./components/examples/FocusingControlled";
 import CheckingControlled from "./components/examples/CheckingControlled";
+import PreparedControlled from "./components/examples/PreparedControlled";
 import ErrorScenario from "./components/examples/ErrorScenario";
 import DisabledTree from "./components/examples/DisabledTree";
 import CustomCellRender from "./components/examples/CustomCellRender";
@@ -37,6 +38,24 @@ export default class App extends React.Component<{}, AppState> {
 	}
 
 	render() {
+
+		const basics: Array<React.ReactNode> = [];
+		basics.push(<Basic key="1" themeName={this.state.themeName}></Basic>);
+		basics.push(<Basic2 key="2" themeName={this.state.themeName}></Basic2>);
+		basics.push(<Basic3 key="3" themeName={this.state.themeName}></Basic3>);
+		basics.push(<Basic4 key="4" themeName={this.state.themeName}></Basic4>);
+
+		const controlleds: Array<React.ReactNode> = [];
+		controlleds.push(<ExpandControlled key="1" themeName={this.state.themeName}></ExpandControlled>);
+		controlleds.push(<FocusingControlled key="2" themeName={this.state.themeName}></FocusingControlled>);
+		controlleds.push(<CheckingControlled key="3" themeName={this.state.themeName}></CheckingControlled>);
+		controlleds.push(<PreparedControlled key="4" themeName={this.state.themeName}></PreparedControlled>);
+
+		const others: Array<React.ReactNode> = [];
+		others.push(<ErrorScenario key="1" themeName={this.state.themeName}></ErrorScenario>);
+		others.push(<DisabledTree key="2" themeName={this.state.themeName}></DisabledTree>);
+		others.push(<CustomCellRender key="3" themeName={this.state.themeName}></CustomCellRender>);
+
 		return (
 			<React.Suspense fallback={null}>
 				<div className="height100">
@@ -47,20 +66,13 @@ export default class App extends React.Component<{}, AppState> {
 						themeMap={themes}
 					>
 						<div className="basic-grid-layout">
-							<Basic themeName={this.state.themeName}></Basic>
-							<Basic2 themeName={this.state.themeName}></Basic2>
-							<Basic3 themeName={this.state.themeName}></Basic3>
-							<Basic4 themeName={this.state.themeName}></Basic4>
+							{basics}
 						</div>
 						<div className="controlled-grid-layout">
-							<ExpandControlled themeName={this.state.themeName}></ExpandControlled>
-							<FocusingControlled themeName={this.state.themeName}></FocusingControlled>
-							<CheckingControlled themeName={this.state.themeName}></CheckingControlled>
+							{controlleds}
 						</div>
 						<div className="controlled-grid-layout">
-							<ErrorScenario themeName={this.state.themeName}></ErrorScenario>
-							<DisabledTree themeName={this.state.themeName}></DisabledTree>
-							<CustomCellRender themeName={this.state.themeName}></CustomCellRender>
+							{others}
 						</div>
 					</ThemeSwitcherProvider>
 				</div>

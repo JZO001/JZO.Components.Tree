@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Tree, { LoadItemEventArgs, ToggleMode } from "../Tree";
+import Tree, { LoadItemEventArgs, ToggleModeEnum } from "../Tree";
 import { BasicItem } from "./types";
 
 type BasicProps = {
@@ -40,7 +40,7 @@ export default class DisabledTree extends React.Component<BasicProps> {
                         allowCheckboxes={true}
                         allowCheckAll={true}
                         disabled={true}
-                        nodeDescendantToggleMode={ToggleMode.Select}
+                        nodeDescendantToggleMode={ToggleModeEnum.Select}
                         nodeIdExpr="id"
                         nodeParentIdExpr="parentId"
                         nodeRootIdExpr="0"

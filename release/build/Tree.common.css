@@ -67,6 +67,8 @@
     overflow-y: auto;
 }
 
+.jzo-tree-row-tbody {}
+
 .jzo-tree-retraction-cell {
     margin: 0;
     padding: 0;
@@ -131,3 +133,9 @@
 .jzo-tree-hand-pointer {
     cursor: pointer;
 }
+
+.jzo-tree-checkbox {}
+
+.jzo-tree-checkbox-all {}
+
+.jzo-tree-checkbox-node {}

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Tree, { LoadItemEventArgs } from "../Tree";
+import Tree, { LoadItemEventArgs, TreeNodeEventArgs } from "../Tree";
 import { BasicItem } from "./types";
 
 type BasicProps = {
@@ -27,6 +27,10 @@ export default class Basic extends React.Component<BasicProps> {
         });
     }
 
+    private hasChildren = (e: TreeNodeEventArgs) => {
+        return (e.nodeItem as BasicItem).hasChildren;
+    }
+
     render() {
         return (
             <div className="header-content-layout">
@@ -42,7 +46,7 @@ export default class Basic extends React.Component<BasicProps> {
                         nodeIdExpr="id"
                         nodeParentIdExpr="parentId"
                         nodeRootIdExpr="0"
-                        nodeHasChildrenExpr="hasChildren"
+                        nodeHasChildrenExpr={this.hasChildren}
                         nodeTitleExpr="title"
                         nodeHintExpr="hint"
                         onLoadItems={this.onLoad}
