@@ -517,6 +517,6 @@ Every DOM node elements in the component have an own CSS class which are used to
 | getNodeLevel(nodeId: NumberOrString) | number or undefined | Returns number of the level (deep) of a node
 | getNodeParentId(nodeId: NumberOrString) | NumberOrString or undefined | Returns parent node identifier of a node
 | getNodeValueById(nodeId: NumberOrString) | any or undefined | Returns the data itself, provided by the user
-| repain() | void | Repaint the tree layout completely
+| repaint() | void | Repaint the tree layout completely
 | reset() | void | Reset the content and the state of the component into the initial state. It clears all settings, nodes, etc. It is a restart.
 | resetError() | void | Reset (hide) the displayed error inside the component, when a load error occured
