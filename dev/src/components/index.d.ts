@@ -7,6 +7,12 @@ declare module "jzo-components-tree" {
         Deselect
     }
 
+    export enum CheckedStateEnum {
+        Checked = 0,
+        Unchecked = 1,
+        Undetermined = 2
+    }
+
     export type NumberOrString = string | number;
     export type FuncOrStrRetNumOrStr = string | ((e: TreeNodeEventArgs) => NumberOrString);
     export type FuncOrStrOrNumRetNumOrStr = string | number | ((e: TreeNodeEventArgs) => NumberOrString);

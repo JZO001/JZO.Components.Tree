@@ -13,6 +13,7 @@ import PreparedControlled from "./components/examples/PreparedControlled";
 import ErrorScenario from "./components/examples/ErrorScenario";
 import DisabledTree from "./components/examples/DisabledTree";
 import CustomCellRender from "./components/examples/CustomCellRender";
+import ResizableTree from "./components/examples/ResizableTree";
 
 import './App.css';
 
@@ -55,6 +56,7 @@ export default class App extends React.Component<{}, AppState> {
 		others.push(<ErrorScenario key="1" themeName={this.state.themeName}></ErrorScenario>);
 		others.push(<DisabledTree key="2" themeName={this.state.themeName}></DisabledTree>);
 		others.push(<CustomCellRender key="3" themeName={this.state.themeName}></CustomCellRender>);
+		others.push(<ResizableTree key="4" themeName={this.state.themeName}></ResizableTree>);
 
 		return (
 			<React.Suspense fallback={null}>

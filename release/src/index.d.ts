@@ -8,9 +8,9 @@ declare module "jzo-components-tree" {
     }
 
     export enum CheckedStateEnum {
-        Checked,
-        Unchecked,
-        Undetermined
+        Checked = 0,
+        Unchecked = 1,
+        Undetermined = 2
     }
 
     export type NumberOrString = string | number;

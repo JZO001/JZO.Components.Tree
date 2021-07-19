@@ -202,6 +202,17 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
 
     static IsUndefinedOrNullOrEmpty = (obj: any): boolean => obj === undefined || obj === null || obj === "";
 
+    public repaint = () => {
+        if (this._repaintTimeoutId !== -1) {
+            clearTimeout(this._repaintTimeoutId);
+            this._repaintTimeoutId = -1;
+        }
+        this._tableRefs.forEach((table: HTMLTableElement) => {
+            table.style.minWidth = null;
+        });
+        this.forceUpdate();
+    }
+
     public resetError = () => {
         this.setState({ errorText: null, hasError: false });
     }
@@ -453,17 +464,17 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         const nodeData: NodeData = {
             id: id,
             parentId: parentId,
-            hasChildren: this.props.nodeHasChildrenExpr ? this.acquireDataFromNode("nodeHasChildrenExpr", this.props.nodeHasChildrenExpr, node).value as boolean : false,
+            hasChildren: this.props.nodeHasChildrenExpr ? this.acquireDataFromNode("nodeHasChildrenExpr", props.nodeHasChildrenExpr, node).value as boolean : false,
             hasExpandableNodesInChildren: false,
             isChildrenLoaded: false,
-            hasCheckbox: (this.props.allowCheckboxes && this.props.nodeIsCheckboxVisibleExpr) ? this.acquireDataFromNode("nodeIsCheckboxVisibleExpr", this.props.nodeIsCheckboxVisibleExpr, node).value as boolean : this.props.allowCheckboxes,
-            isDisabled: this.props.nodeIsDisabledExpr ? this.acquireDataFromNode("nodeIsDisabledExpr", this.props.nodeIsDisabledExpr, node).value as boolean : false,
+            hasCheckbox: (props.allowCheckboxes && props.nodeIsCheckboxVisibleExpr) ? this.acquireDataFromNode("nodeIsCheckboxVisibleExpr", props.nodeIsCheckboxVisibleExpr, node).value as boolean : this.props.allowCheckboxes,
+            isDisabled: props.nodeIsDisabledExpr ? this.acquireDataFromNode("nodeIsDisabledExpr", props.nodeIsDisabledExpr, node).value as boolean : false,
             level: level,
             node: node,
             parent: parent,
             isExpanded: props.expandedRowKeys !== null && props.expandedRowKeys.indexOf(id) !== -1,
             isFocused: props.allowFocusing && props.focusedRowKey === id,
-            isChecked: parent.isChecked === CheckedStateEnum.Checked || (!Tree.IsUndefinedOrNullOrEmpty(this.props.checkedRowKeys) && this.props.checkedRowKeys.indexOf(id) !== -1) ? CheckedStateEnum.Checked : CheckedStateEnum.Unchecked,
+            isChecked: parent.isChecked === CheckedStateEnum.Checked || (!Tree.IsUndefinedOrNullOrEmpty(props.onFocusedRowKeyChanged) && !Tree.IsUndefinedOrNullOrEmpty(props.checkedRowKeys) && props.checkedRowKeys.indexOf(id) !== -1) ? CheckedStateEnum.Checked : CheckedStateEnum.Unchecked,
             children: []
         };
         if (nodeData.hasChildren) parent.hasExpandableNodesInChildren = nodeData.hasChildren;
@@ -832,7 +843,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                 this._currentlyFocusedNode = null;
         }
 
-        nodeData.hasChildren = this.props.nodeHasChildrenExpr ? this.acquireDataFromNode("nodeHasChildrenExpr", this.props.nodeHasChildrenExpr, nodeData).value as boolean : false;
+        //nodeData.hasChildren = this.props.nodeHasChildrenExpr ? this.acquireDataFromNode("nodeHasChildrenExpr", this.props.nodeHasChildrenExpr, nodeData).value as boolean : false;
         nodeData.isDisabled = this.props.nodeIsDisabledExpr ? this.acquireDataFromNode("nodeIsDisabledExpr", this.props.nodeIsDisabledExpr, nodeData).value as boolean : false;
         nodeData.hasCheckbox = (this.props.allowCheckboxes && this.props.nodeIsCheckboxVisibleExpr) ? this.acquireDataFromNode("nodeIsCheckboxVisibleExpr", this.props.nodeIsCheckboxVisibleExpr, nodeData).value as boolean : this.props.allowCheckboxes;
 
@@ -869,7 +880,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         styleTableRow.height = styleTableRow.maxHeight = this.props.rowHeightsInPixel.toString() + 'px';
 
         const styleTable: React.CSSProperties = { ...styleTableRow };
-        styleTable.width = styleTable.maxWidth = "";
+        styleTable.width = styleTable.maxWidth = null;
 
         const row = <table key={this._uniqueId + "_" + nodeData.id}
             className={classNames}

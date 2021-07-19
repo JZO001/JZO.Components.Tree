@@ -118,6 +118,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     };
     constructor(props: TreeProps);
     static IsUndefinedOrNullOrEmpty: (obj: any) => boolean;
+    repaint: () => void;
     resetError: () => void;
     getCheckedState: (nodeId: NumberOrString) => CheckedStateEnum | undefined;
     getHasChildrenState: (nodeId: NumberOrString) => boolean | undefined;

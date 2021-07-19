@@ -202,6 +202,17 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
 
     static IsUndefinedOrNullOrEmpty = (obj: any): boolean => obj === undefined || obj === null || obj === "";
 
+    public repaint = () => {
+        if (this._repaintTimeoutId !== -1) {
+            clearTimeout(this._repaintTimeoutId);
+            this._repaintTimeoutId = -1;
+        }
+        this._tableRefs.forEach((table: HTMLTableElement) => {
+            table.style.minWidth = null;
+        });
+        this.forceUpdate();
+    }
+
     public resetError = () => {
         this.setState({ errorText: null, hasError: false });
     }
@@ -869,7 +880,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         styleTableRow.height = styleTableRow.maxHeight = this.props.rowHeightsInPixel.toString() + 'px';
 
         const styleTable: React.CSSProperties = { ...styleTableRow };
-        styleTable.width = styleTable.maxWidth = "";
+        styleTable.width = styleTable.maxWidth = null;
 
         const row = <table key={this._uniqueId + "_" + nodeData.id}
             className={classNames}

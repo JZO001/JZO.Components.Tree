@@ -19,7 +19,13 @@
 .others-grid-layout {
     display: grid;
     grid-template-rows: auto;
-    grid-template-columns: repeat(3, 350px);
+    grid-template-columns: repeat(4, 350px);
+}
+
+.header-content-button-layout {
+    display: grid;
+    grid-template-rows: 78px auto 26px;
+    grid-template-columns: 350px;
 }
 
 .margin12 {
