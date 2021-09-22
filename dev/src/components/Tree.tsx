@@ -186,6 +186,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private _isVerticalScrollBarVisible: boolean = false;
     private _tableRefs: Array<HTMLTableElement> = [];
     private _needReset: boolean = false;
+    private _isUnmounted: boolean = false;
 
     state = {
         hasError: false,
@@ -202,6 +203,18 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
 
     static IsUndefinedOrNullOrEmpty = (obj: any): boolean => obj === undefined || obj === null || obj === "";
 
+    componentDidMount() {
+        this.loadChildNodes(this._itemDict.get(this._rootNodeId)).then(() => this.forceUpdateInternal());
+    }
+
+    componentWillUnmount() {
+        if (this._repaintTimeoutId !== -1) {
+            clearTimeout(this._repaintTimeoutId);
+            this._repaintTimeoutId = -1;
+        }
+        this._isUnmounted = true;
+    }
+
     public repaint = () => {
         if (this._repaintTimeoutId !== -1) {
             clearTimeout(this._repaintTimeoutId);
@@ -210,7 +223,15 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         this._tableRefs.forEach((table: HTMLTableElement) => {
             table.style.minWidth = null;
         });
-        this.forceUpdate();
+        this.forceUpdateInternal();
+    }
+
+    private forceUpdateInternal = () => {
+        if (!this._isUnmounted) {
+            setTimeout(() => {
+                if (!this._isUnmounted) this.forceUpdate();
+            }, 0);
+        }
     }
 
     public resetError = () => {
@@ -506,7 +527,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             this._tableRefs.forEach((table: HTMLTableElement) => {
                 table.style.minWidth = null;
             });
-            this.forceUpdate();
+            this.forceUpdateInternal();
         } else {
             // controlled
             const ev: ExpandedRowKeysChangedEventArgs = {
@@ -546,7 +567,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                     if (this._currentlyFocusedNode.id !== nodeData.id) this._currentlyFocusedNode.isFocused = false;
                 }
                 this._currentlyFocusedNode = nodeData.isFocused ? nodeData : null;
-                this.forceUpdate();
+                this.forceUpdateInternal();
             } else {
                 // controlled
                 const ev: FocusedRowKeyChangedEventArgs = {
@@ -614,7 +635,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             }
             this.props.onCheckedRowKeysChanged(e);
         } else {
-            this.forceUpdate();
+            this.forceUpdateInternal();
         }
     }
 
@@ -791,7 +812,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             <td className="jzo-tree-retraction-cell" style={styleRetractionCell}></td>
             <td className={"jzo-tree-toggle-cell "} style={styleToggleCell}>
                 <div className={"jzo-tree-hand-pointer jzo-tree-centered-content " + toggleClasses}
-                    style={styleToggleCell} onClick={() => eventArgs.onToggleIconClickFunction.call(this)}>
+                    style={styleToggleCell} onClick={eventArgs.hasChildren ? () => eventArgs.onToggleIconClickFunction.call(this) : () => { }}>
                 </div>
             </td>
             <td className="jzo-tree-checkbox-cell" style={styleCheckboxCell}>
@@ -984,17 +1005,6 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         this.setState({ errorText: error, hasError: true });
     }
 
-    componentDidMount() {
-        this.loadChildNodes(this._itemDict.get(this._rootNodeId)).then(() => this.forceUpdate());
-    }
-
-    componentWillUnmount() {
-        if (this._repaintTimeoutId !== -1) {
-            clearTimeout(this._repaintTimeoutId);
-            this._repaintTimeoutId = -1;
-        }
-    }
-
     render() {
         let classNames = "jzo-tree jzo-tree-borders jzo-disable-selection jzo-tree-box-sizing jzo-tree-flexDirCol";
         if (this.props.disabled) classNames += " jzo-tree-disabled";
@@ -1023,7 +1033,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         if (Tree.IsUndefinedOrNullOrEmpty(this._containerDivRef.current)) {
             if (this._repaintTimeoutId === -1) {
                 this._repaintTimeoutId = setTimeout(() => {
-                    this.forceUpdate();
+                    this.forceUpdateInternal();
                     this._repaintTimeoutId = -1;
                 }, 1) as any as number;
             }
@@ -1033,7 +1043,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                     const hasVerticalScrollBar: boolean = this._containerDivRef.current.scrollHeight > this._containerDivRef.current.clientHeight;
                     if (hasVerticalScrollBar !== this._isVerticalScrollBarVisible) {
                         this._isVerticalScrollBarVisible = hasVerticalScrollBar;
-                        this.forceUpdate();
+                        this.forceUpdateInternal();
                     }
                     this._repaintTimeoutId = -1;
                 }, 1) as any as number;
@@ -1045,7 +1055,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             this.loadChildNodes(this._itemDict.get(this._rootNodeId))
                 .then(() => {
                     if (this.state.hasError) this.setState({ hasError: false, errorText: null });
-                    this.forceUpdate();
+                    this.forceUpdateInternal();
                 });
         }
 

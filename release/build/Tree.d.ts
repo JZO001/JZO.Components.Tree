@@ -112,13 +112,17 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private _isVerticalScrollBarVisible;
     private _tableRefs;
     private _needReset;
+    private _isUnmounted;
     state: {
         hasError: boolean;
         errorText: string;
     };
     constructor(props: TreeProps);
     static IsUndefinedOrNullOrEmpty: (obj: any) => boolean;
+    componentDidMount(): void;
+    componentWillUnmount(): void;
     repaint: () => void;
+    private forceUpdateInternal;
     resetError: () => void;
     getCheckedState: (nodeId: NumberOrString) => CheckedStateEnum | undefined;
     getHasChildrenState: (nodeId: NumberOrString) => boolean | undefined;
@@ -157,8 +161,6 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private renderDisableCover;
     private renderError;
     private displayError;
-    componentDidMount(): void;
-    componentWillUnmount(): void;
     render(): JSX.Element;
 }
 export {};
