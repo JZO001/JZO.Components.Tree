@@ -495,7 +495,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
             parent: parent,
             isExpanded: props.expandedRowKeys !== null && props.expandedRowKeys.indexOf(id) !== -1,
             isFocused: props.allowFocusing && props.focusedRowKey === id,
-            isChecked: parent.isChecked === CheckedStateEnum.Checked || (!Tree.IsUndefinedOrNullOrEmpty(props.onFocusedRowKeyChanged) && !Tree.IsUndefinedOrNullOrEmpty(props.checkedRowKeys) && props.checkedRowKeys.indexOf(id) !== -1) ? CheckedStateEnum.Checked : CheckedStateEnum.Unchecked,
+            isChecked: parent.isChecked === CheckedStateEnum.Checked || (!Tree.IsUndefinedOrNullOrEmpty(props.onCheckedRowKeysChanged) && !Tree.IsUndefinedOrNullOrEmpty(props.checkedRowKeys) && props.checkedRowKeys.indexOf(id) !== -1) ? CheckedStateEnum.Checked : CheckedStateEnum.Unchecked,
             children: []
         };
         if (nodeData.hasChildren) parent.hasExpandableNodesInChildren = nodeData.hasChildren;
@@ -931,6 +931,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private renderRows = (rows: Array<React.ReactNode>) => {
 
         setTimeout(() => {
+            if (Tree.IsUndefinedOrNullOrEmpty(this._containerDivRef.current)) return;
             const hasVerticalScrollBar: boolean = this._containerDivRef.current.scrollHeight > this._containerDivRef.current.clientHeight;
             if (this.props.allowHorizontalScroll && !this.props.allowWordWrap && hasVerticalScrollBar) {
                 // find longest table

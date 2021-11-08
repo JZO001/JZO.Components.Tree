@@ -14,7 +14,7 @@ type CheckingControlledState = {
 export default class CheckingControlled extends React.Component<CheckingControlledProps, CheckingControlledState> {
 
     state = {
-        checkedKeys: [] as Array<NumberOrString>
+        checkedKeys: ["Node__1_1_1"] as Array<NumberOrString>
     }
 
     private onLoad = (e: LoadItemEventArgs): Promise<Array<any>> => {
@@ -26,7 +26,7 @@ export default class CheckingControlled extends React.Component<CheckingControll
                     hasChildren: e.nodeParentLevel < 4,
                     id: "Node_" + e.nodeParentId.toString().substring(5) + "_" + i.toString(),
                     parentId: e.nodeParentId,
-                    title: "NodeAAAAAAAA_" + e.nodeParentId.toString().substring(5) + "_" + i.toString()
+                    title: "Node_" + e.nodeParentId.toString().substring(5) + "_" + i.toString()
                 });
             }
 

@@ -1,6 +1,6 @@
 {
   "name": "jzo-components-tree",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "JZO's customizable tree component",
   "author": "Zoltan Juhasz",
   "keywords": [
@@ -29,8 +29,8 @@
     "@testing-library/react": "^12.1.0",
     "@testing-library/user-event": "^13.2.1",
     "@types/jest": "^27.0.2",
-    "@types/react": "^17.0.24",
-    "@types/react-dom": "^17.0.9",
+    "@types/react": "^17.0.32",
+    "@types/react-dom": "^17.0.10",
     "app-manifest-webpack-plugin": "^1.2.2",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.2.1",
