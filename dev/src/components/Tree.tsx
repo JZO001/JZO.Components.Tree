@@ -382,7 +382,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
                             });
                             if (!Tree.IsUndefinedOrNullOrEmpty(this.props.onCheckedRowKeysChanged)) {
                                 createdNodes.forEach((createdNode: NodeData) => {
-                                    if (createdNode.isChecked === CheckedStateEnum.Checked) this.props.checkedRowKeys.push(createdNode.id);
+                                    if (createdNode.isChecked === CheckedStateEnum.Checked && this.props.checkedRowKeys.indexOf(createdNode.id) === -1) this.props.checkedRowKeys.push(createdNode.id);
                                 });
                             }
                             this._tableRefs.splice(0);
