@@ -155,7 +155,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         checkedRowKeys: [],
         expandedRowKeys: [],
         focusedRowKey: null,
-        headerTitle: "Check all",
+        headerTitle: null,
         nodeDescendantToggleMode: ToggleModeEnum.Deselect,
         nodeRootIdExpr: undefined,
         nodeIdExpr: undefined,
@@ -957,7 +957,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     private renderWithCheckAllHeader = () => {
         let content: React.ReactNode = null;
 
-        if (this.props.allowCheckboxes && this.props.allowCheckAll) {
+        if (this.props.allowCheckboxes || (this.props.headerTitle && this.props.headerTitle !== null)) {
             let classNames = "jzo-tree-header-layout";
             if (this.props.showRowLines) classNames += " jzo-tree-bottom-border";
 
@@ -966,13 +966,15 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
 
             content = <div className={classNames}>
                 <div className="jzo-tree-centered-content jzo-tree-header-checkbox">
-                    <input type="checkbox"
-                        className="jzo-tree-checkbox jzo-tree-checkbox-all"
-                        checked={nodeData.isChecked === CheckedStateEnum.Checked}
-                        onChange={() => this.onCheckboxCheckedChanged(nodeData)}
-                        ref={inpRef => inpRef && (inpRef.indeterminate = nodeData.isChecked === CheckedStateEnum.Undetermined)}
-                        disabled={this.props.disabled || nodeData.isDisabled}
-                    />
+                    {this.props.allowCheckAll ?
+                        <input type="checkbox"
+                            className="jzo-tree-checkbox jzo-tree-checkbox-all"
+                            checked={nodeData.isChecked === CheckedStateEnum.Checked}
+                            onChange={() => this.onCheckboxCheckedChanged(nodeData)}
+                            ref={inpRef => inpRef && (inpRef.indeterminate = nodeData.isChecked === CheckedStateEnum.Undetermined)}
+                            disabled={this.props.disabled || nodeData.isDisabled}
+                        />
+                        : null}
                 </div>
                 <div className="jzo-tree-noWrapText-ellipsis jzo-tree-left-centered-content jzo-tree-header-title">
                     {this.props.headerTitle}

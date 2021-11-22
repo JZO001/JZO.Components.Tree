@@ -47,6 +47,7 @@ export default class DisabledTree extends React.Component<BasicProps> {
                         nodeHasChildrenExpr="hasChildren"
                         nodeTitleExpr="title"
                         nodeHintExpr="hint"
+                        headerTitle="Check all"
                         onLoadItems={this.onLoad}
                     />
                 </div>

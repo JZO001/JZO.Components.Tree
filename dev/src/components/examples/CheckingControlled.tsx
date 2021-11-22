@@ -55,6 +55,7 @@ export default class CheckingControlled extends React.Component<CheckingControll
                         nodeRootIdExpr="0"
                         nodeHasChildrenExpr="hasChildren"
                         nodeTitleExpr="title"
+                        headerTitle="Check all"
                         checkedRowKeys={this.state.checkedKeys}
                         onLoadItems={this.onLoad}
                         onCheckedRowKeysChanged={this.onCheckedRowKeysChanged}

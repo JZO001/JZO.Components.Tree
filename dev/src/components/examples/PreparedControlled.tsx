@@ -69,6 +69,7 @@ export default class PreparedControlled extends React.Component<ExpandControlled
                         nodeRootIdExpr="Node_0"
                         nodeHasChildrenExpr="hasChildren"
                         nodeTitleExpr="title"
+                        headerTitle="Check all"
                         checkedRowKeys={this.state.checkedKeys}
                         expandedRowKeys={this.state.expandedRowKeys}
                         focusedRowKey={this.state.focusedRowKey}
