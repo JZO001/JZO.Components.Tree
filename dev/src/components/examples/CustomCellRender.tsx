@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Tree, { LoadItemEventArgs, RenderCellItemEventArgs, ToggleModeEnum } from "../Tree";
+import Tree, { CheckedRowKeysChangedEventArgs, ExpandedRowKeysChangedEventArgs, LoadItemEventArgs, NumberOrString, RenderCellItemEventArgs, ToggleModeEnum } from "../Tree";
 import { BasicItem } from "./types";
 
 import "./CustomCellRender.css";
@@ -9,7 +9,17 @@ type BasicProps = {
     themeName: string;
 }
 
-export default class CustomCellRender extends React.Component<BasicProps> {
+type CustomCellRenderState = {
+    checkedKeys: Array<NumberOrString>,
+    expandedRowKeys: Array<NumberOrString>
+}
+
+export default class CustomCellRender extends React.Component<BasicProps, CustomCellRenderState> {
+
+    state = {
+        checkedKeys: [] as Array<NumberOrString>,
+        expandedRowKeys: [] as Array<NumberOrString>
+    }
 
     private onLoad = (e: LoadItemEventArgs): Promise<Array<any>> => {
         return new Promise<Array<any>>((resolve, reject) => {
@@ -37,6 +47,14 @@ export default class CustomCellRender extends React.Component<BasicProps> {
         </div>
     }
 
+    private onCheckedRowKeysChanged = (e: CheckedRowKeysChangedEventArgs) => {
+        this.setState({ checkedKeys: e.currentRowKeys });
+    }
+
+    private onExpandedRowKeysChangedHandler = (e: ExpandedRowKeysChangedEventArgs) => {
+        this.setState({ expandedRowKeys: e.currentRowKeys });
+    }
+
     render() {
         return (
             <div className="header-content-layout">
@@ -58,8 +76,12 @@ export default class CustomCellRender extends React.Component<BasicProps> {
                         nodeTitleExpr="title"
                         nodeHintExpr="hint"
                         headerTitle="Check all"
+                        expandedRowKeys={this.state.expandedRowKeys}
+                        checkedRowKeys={this.state.checkedKeys}
                         onLoadItems={this.onLoad}
                         onRenderCellItem={this.onCustomCellRender}
+                        onExpandedRowKeysChanged={this.onExpandedRowKeysChangedHandler}
+                        onCheckedRowKeysChanged={this.onCheckedRowKeysChanged}
                     />
                 </div>
             </div>
