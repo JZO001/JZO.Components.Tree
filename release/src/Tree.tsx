@@ -747,6 +747,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     }
 
     private defaultRowRenderer = (eventArgs: RenderRowItemEventArgs): React.ReactNode => {
+        if (Tree.IsUndefinedOrNullOrEmpty(this._containerDivRef.current)) return null;
         const ev: RenderCellItemEventArgs = { ...eventArgs };
         const ev_ext: RenderRowItemEventArgs = ev as RenderRowItemEventArgs;
 
