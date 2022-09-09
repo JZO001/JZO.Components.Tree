@@ -204,7 +204,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     static IsUndefinedOrNullOrEmpty = (obj: any): boolean => obj === undefined || obj === null || obj === "";
 
     componentDidMount() {
-        this.loadChildNodes(this._itemDict.get(this._rootNodeId)).then(() => this.forceUpdateInternal());
+        if (!this._isUnmounted) this.loadChildNodes(this._itemDict.get(this._rootNodeId)).then(() => this.forceUpdateInternal());
     }
 
     componentWillUnmount() {
@@ -215,7 +215,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         this._isUnmounted = true;
     }
 
-    public repaint = () => {
+    public repaint = (callback?: () => void) => {
         if (this._repaintTimeoutId !== -1) {
             clearTimeout(this._repaintTimeoutId);
             this._repaintTimeoutId = -1;
@@ -223,13 +223,13 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
         this._tableRefs.forEach((table: HTMLTableElement) => {
             table.style.minWidth = null;
         });
-        this.forceUpdateInternal();
+        this.forceUpdateInternal(callback);
     }
 
-    private forceUpdateInternal = () => {
+    private forceUpdateInternal = (callback?: () => void) => {
         if (!this._isUnmounted) {
             setTimeout(() => {
-                if (!this._isUnmounted) this.forceUpdate();
+                if (!this._isUnmounted) this.forceUpdate(callback);
             }, 0);
         }
     }
@@ -333,6 +333,8 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     }
 
     public reset = (): void => {
+        this._containerDivRef = React.createRef<HTMLDivElement>();
+        this._uniqueId = Guid.CreateNewAsString();
         this._needReset = true;
         this._currentlyFocusedNode = null;
         this._isVerticalScrollBarVisible = false;

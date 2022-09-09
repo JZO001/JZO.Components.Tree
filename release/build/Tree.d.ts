@@ -121,7 +121,7 @@ export default class Tree extends React.Component<TreeProps, TreeState> {
     static IsUndefinedOrNullOrEmpty: (obj: any) => boolean;
     componentDidMount(): void;
     componentWillUnmount(): void;
-    repaint: () => void;
+    repaint: (callback?: () => void) => void;
     private forceUpdateInternal;
     resetError: () => void;
     getCheckedState: (nodeId: NumberOrString) => CheckedStateEnum | undefined;

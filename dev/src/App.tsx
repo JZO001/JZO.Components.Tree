@@ -29,7 +29,7 @@ type AppState = {
 export default class App extends React.Component<{}, AppState> {
 
 	state = {
-		themeName: "light"
+		themeName: "light",
 	}
 
 	private onToggleTheme = () => {
